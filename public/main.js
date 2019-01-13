@@ -6,6 +6,65 @@
 
 (function($){
 
+  var particleSystem = null;
+  var root = null;
+
+  var options = {
+    url: function(phrase) {
+      return "/api/search?phrase="+phrase;
+    },
+    getValue: "name",
+
+    list: {
+        match: {
+            enabled: true
+        },
+        onChooseEvent: function() {
+          var id = $("#searchBar").getSelectedItemData().id;
+          buildTree(particleSystem,id);
+        }	
+    },
+
+    theme: "square",
+    
+    requestDelay: 100
+  };
+
+  $("#searchBar").easyAutocomplete(options);
+
+  function buildTree(sys,id){
+    var settings = {
+      "async": true,
+      "url": "/api/node?imdb_id="+id,
+      "method": "GET"
+    }
+    
+    $.ajax(settings).done(function (response) {
+      sys.addNode(response.title, {
+        mass: 0.5,
+        imageUrl: response.image_url.replace("@._V1_SY1000_CR0,0,674,1000_AL_.jpg", '@._V1_UX182_CR0,0,182,268_AL_.jpg'),
+        width: 67*2,
+        height: 98*2,
+        level: 1});
+        var settings = {
+          "async": true,
+          "url": "/api/node?imdb_id="+id,
+          "method": "GET"
+        }
+        
+        $.ajax(settings).done(function (response) {
+          sys.addNode(response.title, {
+            mass: 0.5,
+            imageUrl: response.image_url.replace("@._V1_SY1000_CR0,0,674,1000_AL_.jpg", '@._V1_UX182_CR0,0,182,268_AL_.jpg'),
+            width: 67*2,
+            height: 98*2,
+            level: 1});
+          
+        });
+      
+    });
+  }
+
   function demote(node,sys,parent){
     var parent_edges = sys.getEdgesTo(node);
     node.data.level = parent.data.level+1;
@@ -24,6 +83,7 @@
 
   function promote(node,sys,parent){
     node.data.level = parent.data.level+1;
+
     var children_edges = sys.getEdgesFrom(node);
     children_edges.forEach(function(child_edge) {
       promote(child_edge.target,sys,node);
@@ -38,7 +98,8 @@
       console.log("Yay!");
     }
     else{
-      node.data.level=1
+      node.data.level=1;
+      root=node;
       var parent_edge = sys.getEdgesTo(node)[0];
       var children_edges = sys.getEdgesFrom(node);
       sys.pruneEdge(parent_edge);
@@ -76,10 +137,10 @@
       var canvas = $(canvas).get(0)
       var ctx = canvas.getContext("2d");
       var gfx = arbor.Graphics(canvas)
-      var particleSystem = null
   
       var that = {
         init:function(system){
+          window.particleSystem = system
           particleSystem = system
           system.screen({size:{width:$(canvas).width(), height:$(canvas).height()},
           padding:[0,0,0,0]})
@@ -421,3 +482,4 @@
   })
 
 })(this.jQuery)
+
