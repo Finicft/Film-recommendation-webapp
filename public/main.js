@@ -48,7 +48,7 @@
         level: 1});
         var settings = {
           "async": true,
-          "url": "/api/node?imdb_id="+id,
+          "url": "/api/children_nodes?imdb_id="+id,
           "method": "GET"
         }
         
