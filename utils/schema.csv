@@ -1,1 +1,1 @@
-index,imdb_id,title,year,content_rating,genres,directors,actors,runtime,imdb_rating,imdb_votes,gross,director_1,director_2,director_3,actor_1,actor_2,actor_3,genre_1,genre_2,genre_3,image_url
+"index","imdb_id","title","year","content_rating","genres","directors","actors","runtime","imdb_rating","imdb_votes","gross","director_1","director_2","director_3","actor_1","actor_2","actor_3","genre_1","genre_2","genre_3","image_url"
