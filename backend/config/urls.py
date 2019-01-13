@@ -3,7 +3,7 @@ from django.conf.urls import include, url
 from django.views.generic.base import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import root,public
+from api.views import root,public,node, children_nodes
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -13,5 +13,7 @@ project_root = os.path.realpath('../')
 urlpatterns=[
     url(r'^$', root, name='root'),
     url(r'^public\/.+', public, name='root'),
+    url(r'^api\/node', node, name='root'),
+    url(r'^api\/children_nodes', children_nodes, name='root'),
     # url(r'api/node$', hello, name='hello')
 ]
