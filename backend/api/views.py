@@ -32,20 +32,25 @@ def children_nodes(request):
     same_genres = movie.get_same_genres()
     for key in same_genres:
         for each_movie in same_genres[key]:
-            json_movie = each_movie.to_json()
-            list_of_movies.append(json_movie + ",")
+            if each_movie != movie:
+                json_movie = each_movie.to_json()
+                list_of_movies.append(json_movie + ",")
     
     same_directors = movie.get_same_directors()
     for key in same_directors:
         for each_movie in same_directors[key]:
-            json_movie = each_movie.to_json()
-            list_of_movies.append(json_movie + ",")
+            if each_movie != movie:
+                json_movie = each_movie.to_json()
+                list_of_movies.append(json_movie + ",")
+    
 
     same_actors = movie.get_same_actors()
     for key in same_actors:
         for each_movie in same_actors[key]:
-            json_movie = each_movie.to_json()
-            list_of_movies.append(json_movie + ",")
+            if each_movie != movie:
+                json_movie = each_movie.to_json()
+                list_of_movies.append(json_movie + ",")
+    
 
     response = HttpResponse(list_of_movies,content_type='application/json')
     return response
