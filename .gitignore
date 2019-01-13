@@ -1,5 +1,6 @@
 backend/config/__pycache__
 backend/api/__pycache__
 
+.DS_Store
 .vscode/
 ds_store

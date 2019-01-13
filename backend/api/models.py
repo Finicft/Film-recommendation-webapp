@@ -33,6 +33,18 @@ class Movies(models.Model):
     def get_title(self):
         return self.title
 
+    def get_imdb_index(self):
+        return self.imdb_index
+
+    def get_imdb_id(self):
+        return self.imdb_id
+    
+    def get_image_url(self):
+        return self.image_url
+    
+    def get_imdb_rating(self):
+        return self.imdb_rating
+
     def get_same_genres(self):
         movie_genres = [] 
         same_genre_movies = [] 
