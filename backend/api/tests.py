@@ -1,16 +1,12 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
 
-Replace this with more appropriate tests for your application.
-"""
+from .models import Movies
+from .models get_same_genre
 
-from django.test import TestCase
+class Test():
+    genre="Action:Drama"
+
+test0 = Test()
+test1 = get_same_genre(test0)
+print (test1)
 
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)

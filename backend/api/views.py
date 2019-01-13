@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from .models import Movies
+from django.db import connections
 
 def root(request):
     root_file = open("../public/index.html")
