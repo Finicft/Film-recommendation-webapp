@@ -3,6 +3,7 @@ from .models import Movies
 from django.db import connections
 import json
 
+
 def root(request):
     root_file = open("../public/index.html")
     response = HttpResponse(root_file.read())
@@ -51,6 +52,9 @@ def children_nodes(request):
                 json_movie = each_movie.to_json()
                 list_of_movies.append(json_movie + ",")
     
+    string_movies = ''.join(list_of_movies)
+    string_movies = string_movies[:-1]
+    string_movies = "[" + string_movies + "]"
 
-    response = HttpResponse(list_of_movies,content_type='application/json')
+    response = HttpResponse(string_movies,content_type='application/json')
     return response

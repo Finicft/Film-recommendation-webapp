@@ -99,17 +99,17 @@ class Movies(models.Model):
             film_directors.append(self.director_1)
             director_1_movies = Movies.objects.filter(directors__contains = self.director_1)
             random_director_1_movies = random.sample(list(director_1_movies),3)
-            same_genre_movies.append(random_director_1_movies)
+            same_director_films.append(random_director_1_movies)
         if self.director_2 is not "":
             film_directors.append(self.director_2)
             director_2_movies = Movies.objects.filter(directors__contains = self.director_2)
             random_director_2_movies = random.sample(list(director_2_movies),3)
-            same_genre_movies.append(random_director_2_movies)
+            same_director_films.append(random_director_2_movies)
         if self.director_3 is not "":
             film_directors.append(self.director_3)
             director_3_movies = Movies.objects.filter(directors__contains = self.director_3)
             random_director_3_movies = random.sample(list(director_3_movies),3)
-            same_genre_movies.append(random_director_3_movies)
+            same_director_films.append(random_director_3_movies)
         movies = dict(zip(film_directors,same_director_films))
         return movies
 
