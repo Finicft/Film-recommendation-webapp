@@ -15,12 +15,20 @@
     },
     getValue: "name",
 
+    template: {
+      type: "description",
+      fields: {
+          description: "year"
+      }
+    },
+
     list: {
         match: {
             enabled: true
         },
         onChooseEvent: function() {
           var id = $("#searchBar").getSelectedItemData().id;
+          destroyTree(particleSystem);
           buildTree(particleSystem,id);
         }	
     },
@@ -32,34 +40,78 @@
 
   $("#searchBar").easyAutocomplete(options);
 
+  function destroyTree(sys){
+    particleSystem.eachNode(function(node,pt){
+      node.data.level=4;
+    });
+  }
+
   function buildTree(sys,id){
-    var settings = {
+    
+    var settings_0 = {
       "async": true,
       "url": "/api/node?imdb_id="+id,
       "method": "GET"
     }
     
-    $.ajax(settings).done(function (response) {
-      sys.addNode(response.title, {
+    $.ajax(settings_0).done(function (response_0) {
+      sys.addNode(response_0.imdb_id, {
         mass: 0.5,
-        imageUrl: response.image_url.replace("@._V1_SY1000_CR0,0,674,1000_AL_.jpg", '@._V1_UX182_CR0,0,182,268_AL_.jpg'),
+        imageUrl: response_0.image_url.replace(/@\.[\w_,]+\.jpg$/, '@._V1_UX182_CR0,0,182,268_AL_.jpg'),
         width: 67*2,
         height: 98*2,
         level: 1});
-        var settings = {
+
+      sys.addNode('invisible', {
+          mass: 0.5,
+          width: 2,
+          height: 2,
+          level: 1});
+        var settings_1 = {
           "async": true,
           "url": "/api/children_nodes?imdb_id="+id,
           "method": "GET"
         }
         
-        $.ajax(settings).done(function (response) {
-          sys.addNode(response.title, {
-            mass: 0.5,
-            imageUrl: response.image_url.replace("@._V1_SY1000_CR0,0,674,1000_AL_.jpg", '@._V1_UX182_CR0,0,182,268_AL_.jpg'),
-            width: 67*2,
-            height: 98*2,
-            level: 1});
-          
+        $.ajax(settings_1).done(function (response_1) {
+          nodes = response_1
+          for (var i =0;i<nodes.length;i++){
+            var node = nodes[i]
+            sys.addNode(node.imdb_id, {
+              mass: 0.5,
+              imageUrl: node.image_url.replace(/@\.[\w_,]+\.jpg$/, '@._V1_UX182_CR0,0,182,268_AL_.jpg'),
+              width: 67*3/2,
+              height: 98*3/2,
+              level: 2})
+            sys.addEdge(response_0.imdb_id,node.imdb_id, {length:.5});
+            (function(parent) {
+            var settings_2 = {
+              "async": true,
+              "url": "/api/children_nodes?imdb_id="+parent.imdb_id,
+              "method": "GET"
+            }
+            $.ajax(settings_2).done(function (response_2) {
+              nodes_0 = response_2
+              for (var i =0;i<nodes_0.length;i++){
+                node_0 = nodes_0[i]
+                if(!sys.getNode(node_0.imdb_id)){
+                sys.addNode(node_0.imdb_id, {
+                  mass: 0.5,
+                  imageUrl: node_0.image_url.replace(/@\.[\w_,]+\.jpg$/, '@._V1_UX182_CR0,0,182,268_AL_.jpg'),
+                  width: 67*3/2,
+                  height: 98*3/2,
+                  level: 3})
+                sys.addEdge(parent.imdb_id,node_0.imdb_id, {length:.5});
+              }
+              }
+            }).fail(function(e)  {
+              console.log("Sorry. Server unavailable. ");
+            });
+          })(node);
+          }
+          sys.pruneNode('invisible');
+        }).fail(function(e)  {
+          console.log("Sorry. Server unavailable. ");
         });
       
     });
@@ -95,7 +147,7 @@
 
   function handleClick({node},sys){
     if(node.data.level==1){
-      console.log("Yay!");
+      window.open("https://www.imdb.com/title/"+node.name, '_blank');
     }
     else{
       node.data.level=1;
@@ -151,7 +203,7 @@
         },
         resize:function(){
           canvas.width = $(window).width()
-          canvas.height = 0.95*$(window).height()
+          canvas.height = 0.9*$(window).height()
           particleSystem.screen({size:{width:canvas.width, height:canvas.height}})
           _vignette = null
         },
@@ -314,7 +366,7 @@
                 pic.src = node.data.imageUrl;
               }
               else{
-                ctx.drawImage(node.data.image, pt.x-(radius/2), pt.y-(radius/2), imageW, imageH);
+                ctx.drawImage(node.data.image, pt.x-(imageW/2), pt.y-(imageH/2), imageW, imageH);
               }
             }
           })    			
@@ -420,49 +472,57 @@
     }   
 
   $(document).ready(function(){
-    var sys = arbor.ParticleSystem(300, 400, 1) // create the system with sensible repulsion/stiffness/friction
+    var sys = arbor.ParticleSystem(500, 300, 0.5) // create the system with sensible repulsion/stiffness/friction
     sys.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
 
-    // add some nodes to the graph and watch it go...
-    sys.addNode('a', {
-    mass: 0.5,
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_UX182_CR0,0,182,268_AL_.jpg',
-    width: 67*2,
-    height: 98*2,
-    level: 1})
+    // // add some nodes to the graph and watch it go...
+    // sys.addNode('a', {
+    // mass: 0.5,
+    // //imageUrl: '',//'https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_UX182_CR0,0,182,268_AL_.jpg',
+    // width: 67*2,
+    // height: 98*2,
+    // level: 1})
 
-    sys.addNode('b', {
-    mass: 0.5,
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_UX182_CR0,0,182,268_AL_.jpg',
-    width: 67*3/2,
-    height: 98*3/2,
-    level: 2})
-    sys.addEdge('a','b', {length:.5})
+    // sys.addNode('b', {
+    // mass: 0.5,
+    // //imageUrl: '',//'https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_UX182_CR0,0,182,268_AL_.jpg',
+    // width: 67*3/2,
+    // height: 98*3/2,
+    // level: 2})
+    // sys.addEdge('a','b', {length:.25})
 
-    sys.addNode('c', {
-    mass: 0.5,
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_UX182_CR0,0,182,268_AL_.jpg',
-    width: 67*3/2,
-    height: 98*3/2,
-    level: 2})
-    sys.addEdge('a','c', {length:.5})
+    // sys.addNode('c', {
+    // mass: 0.5,
+    // imageUrl: 'https://m.media-amazon.com/images/M/MV5BMTM4OGJmNWMtOTM4Ni00NTE3LTg3MDItZmQxYjc4N2JhNmUxXkEyXkFqcGdeQXVyNTgzMDMzMTg@._V1_UX182_CR0,0,182,268_AL_.jpg',
+    // width: 67*3/2,
+    // height: 98*3/2,
+    // level: 2})
+    // sys.addEdge('a','c', {length:.25})
     
-    sys.addNode('d', {
-    mass: 0.5,
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_UX182_CR0,0,182,268_AL_.jpg',
-    width: 67*3/2,
-    height: 98*3/2,
-    level: 2})
-    sys.addEdge('a','d', {length:.5})
+    // sys.addNode('d', {
+    // mass: 0.5,
+    // imageUrl: 'https://m.media-amazon.com/images/M/MV5BOTM2NTI3NTc3Nl5BMl5BanBnXkFtZTgwNzM1OTQyNTM@._V1_UX182_CR0,0,182,268_AL_.jpg',
+    // width: 67*3/2,
+    // height: 98*3/2,
+    // level: 2})
+    // sys.addEdge('a','d', {length:.25})
 
-    sys.addNode('e', {
-      mass: 0.5,
-      imageUrl: 'https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_UX182_CR0,0,182,268_AL_.jpg',
-      width: 67,
-      height: 98,
-      level: 3})
-      sys.addEdge('d','e', {length:.5})
+    // sys.addNode('e', {
+    //   mass: 0.5,
+    //   imageUrl: 'https://m.media-amazon.com/images/M/MV5BNzVlY2MwMjktM2E4OS00Y2Y3LWE3ZjctYzhkZGM3YzA1ZWM2XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_UX182_CR0,0,182,268_AL_.jpg',
+    //   width: 67,
+    //   height: 98,
+    //   level: 3})
+    //   sys.addEdge('d','e', {length:.25})
+
+    //   sys.addNode('f', {
+    //     mass: 0.5,
+    //     imageUrl: 'https://m.media-amazon.com/images/M/MV5BMTM0MDgwNjMyMl5BMl5BanBnXkFtZTcwNTg3NzAzMw@@._V1_UX182_CR0,0,182,268_AL_.jpg',
+    //     width: 67,
+    //     height: 98,
+    //     level: 3})
+    //     sys.addEdge('b','f', {length:.25})
     
     // or, equivalently:
     //

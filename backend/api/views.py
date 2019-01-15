@@ -1,10 +1,10 @@
 import json
 import re
 import requests
+import random
 from django.http import HttpResponse
 from .models import Movies
 from django.db import connections
-import json
 
 
 def root(request):
@@ -55,11 +55,11 @@ def children_nodes(request):
                 json_movie = each_movie.to_json()
                 list_of_movies.append(json_movie + ",")
     
-    string_movies = ''.join(list_of_movies)
+    string_movies = ''.join(random.sample(list_of_movies,min(len(list_of_movies),5)))
     string_movies = string_movies[:-1]
     string_movies = "[" + string_movies + "]"
 
-    response = HttpResponse(list_of_movies,content_type='application/json')
+    response = HttpResponse(string_movies,content_type='application/json')
     return response
     
 def search(request):
@@ -74,7 +74,8 @@ def search(request):
         if(re.match(r"tt\d+",item["id"])):
             result_array.append({
                 "name": item["l"],
-                "id": item["id"]
+                "id": item["id"],
+                "year": item["y"]
             })
     response = HttpResponse(json.dumps(result_array),content_type='application/json')
     return response
