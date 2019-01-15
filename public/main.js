@@ -245,7 +245,7 @@
             ctx.save() 
               ctx.beginPath()
               ctx.lineWidth = (!isNaN(weight)) ? parseFloat(weight) : 1
-              ctx.strokeStyle = (color) ? color : "#cccccc"
+              ctx.strokeStyle = (color) ? color : "#888"
               ctx.fillStyle = null
   
               ctx.moveTo(tail.x, tail.y)
@@ -260,7 +260,7 @@
                 var wt = !isNaN(weight) ? parseFloat(weight) : 1
                 var arrowLength = 6 + wt
                 var arrowWidth = 2 + wt
-                ctx.fillStyle = (color) ? color : "#cccccc"
+                ctx.fillStyle = (color) ? color : "#888"
                 ctx.translate(head.x, head.y);
                 ctx.rotate(Math.atan2(head.y - tail.y, head.x - tail.x));
   
